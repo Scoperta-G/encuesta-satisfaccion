@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Encuesta de Satisfacción - Estudios de Mercado</title>
+<title>Encuesta de Satisfacción - Scoperta</title>
 <style>
   :root {
     --primary: #1a1a2e;
     --accent: #d4af37;
+    --azul: #496283;
     --bg: #f7f7f5;
     --text: #2b2b2b;
     --muted: #6b6b6b;
@@ -22,13 +23,13 @@
     padding: 24px 16px 60px;
   }
   .container {
-    max-width: 640px;
+    max-width: 680px;
     margin: 0 auto;
   }
   header {
     text-align: center;
     margin-bottom: 32px;
-    background: #496283;
+    background: var(--azul);
     border-radius: 12px;
     padding: 28px 20px;
   }
@@ -50,27 +51,43 @@
     background: #fff;
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 20px;
+    padding: 22px 20px;
     margin-bottom: 18px;
   }
   .card h2 {
-    font-size: 1rem;
-    color: var(--primary);
-    margin: 0 0 16px;
+    font-size: 1.05rem;
+    color: var(--azul);
+    margin: 0 0 4px;
     border-bottom: 2px solid var(--accent);
-    padding-bottom: 8px;
+    padding-bottom: 10px;
   }
   .field {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
   }
   .field:last-child { margin-bottom: 0; }
-  label {
+  .field > label.q {
     display: block;
     font-weight: 600;
-    font-size: 0.92rem;
-    margin-bottom: 8px;
+    font-size: 0.94rem;
+    margin-bottom: 10px;
+    line-height: 1.4;
   }
-  input[type="text"], input[type="email"], textarea {
+  .field .optional-tag {
+    font-weight: 400;
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+  textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.92rem;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 70px;
+  }
+  input[type="text"] {
     width: 100%;
     padding: 10px 12px;
     border: 1px solid var(--border);
@@ -78,7 +95,8 @@
     font-size: 0.92rem;
     font-family: inherit;
   }
-  textarea { resize: vertical; min-height: 70px; }
+
+  /* Escala numérica (1-5, 0-10) */
   .scale {
     display: flex;
     gap: 6px;
@@ -93,31 +111,80 @@
     color: var(--muted);
     cursor: pointer;
     flex: 1;
-    min-width: 32px;
+    min-width: 30px;
   }
-  .scale input[type="radio"] {
-    margin-bottom: 4px;
-  }
+  .scale input[type="radio"] { margin-bottom: 4px; }
   .scale-labels {
     display: flex;
     justify-content: space-between;
-    font-size: 0.75rem;
+    font-size: 0.74rem;
     color: var(--muted);
-    margin-top: 4px;
+    margin-top: 6px;
   }
-  .nps-scale {
+
+  /* Lista de opciones (selección única) */
+  .choice-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .choice-list label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-weight: 400;
+    font-size: 0.9rem;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    cursor: pointer;
+  }
+  .choice-list input { margin-top: 2px; }
+  .choice-list .otro-input {
+    margin-left: 26px;
+    margin-top: -4px;
+  }
+
+  /* Cuadrícula de opción múltiple (pregunta de aspectos) */
+  .matrix-item {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .matrix-item:last-child { border-bottom: none; }
+  .matrix-item .matrix-label {
+    font-weight: 600;
+    font-size: 0.88rem;
+    margin-bottom: 8px;
+  }
+  .matrix-scale {
     display: flex;
     gap: 4px;
     flex-wrap: wrap;
   }
-  .nps-scale label {
+  .matrix-scale label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-weight: 400;
+    font-size: 0.65rem;
+    color: var(--muted);
+    cursor: pointer;
     flex: 1;
-    min-width: 26px;
+    min-width: 42px;
+    text-align: center;
   }
+  .matrix-scale input[type="radio"] { margin-bottom: 3px; }
+  .matrix-legend {
+    font-size: 0.76rem;
+    color: var(--muted);
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+
   button {
     width: 100%;
     padding: 14px;
-    background: var(--primary);
+    background: var(--azul);
     color: #fff;
     border: none;
     border-radius: 8px;
@@ -127,18 +194,10 @@
     margin-top: 4px;
   }
   button:disabled { opacity: 0.6; cursor: not-allowed; }
-  .hint {
-    font-size: 0.8rem;
-    color: var(--muted);
-    margin-top: -12px;
-    margin-bottom: 16px;
-  }
-  #successMsg, #errorMsg {
-    display: none;
-    text-align: center;
-    padding: 40px 20px;
-  }
-  #successMsg h2 { color: var(--primary); }
+
+  #successMsg, #errorMsg { display: none; text-align: center; padding: 40px 20px; }
+  #successMsg h2 { color: var(--azul); }
+  #successMsg p { color: var(--muted); line-height: 1.6; }
   #errorMsg { color: #b00020; }
 </style>
 </head>
@@ -147,132 +206,264 @@
   <header>
     <img src="LOGO SCOPERTA 2024.png" alt="Scoperta">
     <h1>Encuesta de Satisfacción</h1>
-    <p>Tu opinión sobre el estudio de mercado realizado nos ayuda a mejorar. Te tomará menos de 3 minutos.</p>
+    <p>Tu opinión sobre el estudio de mercado realizado nos ayuda a mejorar. Te tomará unos minutos.</p>
   </header>
 
   <form id="surveyForm">
+
     <div class="card">
       <h2>Datos generales</h2>
       <div class="field">
-        <label for="empresa">Empresa / Cliente</label>
+        <label class="q" for="empresa">Empresa / Cliente</label>
         <input type="text" id="empresa" name="empresa" required>
       </div>
       <div class="field">
-        <label for="estudio">Estudio realizado</label>
+        <label class="q" for="estudio">Estudio realizado</label>
         <input type="text" id="estudio" name="estudio" placeholder="Ej. Mystery Shopper, estudio de mercado, benchmark...">
       </div>
     </div>
 
     <div class="card">
-      <h2>Servicio</h2>
+      <h2>Servicio general</h2>
 
       <div class="field">
-        <label>Calificación general del servicio</label>
-        <div class="scale" data-name="calificacionGeneral">
-          <label><input type="radio" name="calificacionGeneral" value="1">1</label>
-          <label><input type="radio" name="calificacionGeneral" value="2">2</label>
-          <label><input type="radio" name="calificacionGeneral" value="3">3</label>
-          <label><input type="radio" name="calificacionGeneral" value="4">4</label>
-          <label><input type="radio" name="calificacionGeneral" value="5">5</label>
+        <label class="q">1. En general, ¿qué tan satisfecho se encuentra con el servicio proporcionado por Scoperta?</label>
+        <div class="scale">
+          <label><input type="radio" name="satisfaccionGeneral" value="1" required>1</label>
+          <label><input type="radio" name="satisfaccionGeneral" value="2">2</label>
+          <label><input type="radio" name="satisfaccionGeneral" value="3">3</label>
+          <label><input type="radio" name="satisfaccionGeneral" value="4">4</label>
+          <label><input type="radio" name="satisfaccionGeneral" value="5">5</label>
         </div>
         <div class="scale-labels"><span>Muy insatisfecho</span><span>Muy satisfecho</span></div>
       </div>
 
       <div class="field">
-        <label>Claridad y utilidad de los resultados entregados</label>
-        <div class="scale">
-          <label><input type="radio" name="claridadResultados" value="1">1</label>
-          <label><input type="radio" name="claridadResultados" value="2">2</label>
-          <label><input type="radio" name="claridadResultados" value="3">3</label>
-          <label><input type="radio" name="claridadResultados" value="4">4</label>
-          <label><input type="radio" name="claridadResultados" value="5">5</label>
+        <label class="q">2. ¿Cómo calificaría los siguientes aspectos del servicio?</label>
+        <div class="matrix-legend">1 = Muy deficiente · 2 = Deficiente · 3 = Regular · 4 = Bueno · 5 = Excelente · 6 = No aplica</div>
+
+        <div class="matrix-item">
+          <div class="matrix-label">Comprensión de las necesidades de su empresa</div>
+          <div class="matrix-scale">
+            <label><input type="radio" name="grid_comprension" value="1" required>1</label>
+            <label><input type="radio" name="grid_comprension" value="2">2</label>
+            <label><input type="radio" name="grid_comprension" value="3">3</label>
+            <label><input type="radio" name="grid_comprension" value="4">4</label>
+            <label><input type="radio" name="grid_comprension" value="5">5</label>
+            <label><input type="radio" name="grid_comprension" value="6">N/A</label>
+          </div>
         </div>
-        <div class="scale-labels"><span>Muy insatisfecho</span><span>Muy satisfecho</span></div>
+
+        <div class="matrix-item">
+          <div class="matrix-label">Claridad de la propuesta presentada</div>
+          <div class="matrix-scale">
+            <label><input type="radio" name="grid_claridadPropuesta" value="1" required>1</label>
+            <label><input type="radio" name="grid_claridadPropuesta" value="2">2</label>
+            <label><input type="radio" name="grid_claridadPropuesta" value="3">3</label>
+            <label><input type="radio" name="grid_claridadPropuesta" value="4">4</label>
+            <label><input type="radio" name="grid_claridadPropuesta" value="5">5</label>
+            <label><input type="radio" name="grid_claridadPropuesta" value="6">N/A</label>
+          </div>
+        </div>
+
+        <div class="matrix-item">
+          <div class="matrix-label">Atención y amabilidad del equipo</div>
+          <div class="matrix-scale">
+            <label><input type="radio" name="grid_atencion" value="1" required>1</label>
+            <label><input type="radio" name="grid_atencion" value="2">2</label>
+            <label><input type="radio" name="grid_atencion" value="3">3</label>
+            <label><input type="radio" name="grid_atencion" value="4">4</label>
+            <label><input type="radio" name="grid_atencion" value="5">5</label>
+            <label><input type="radio" name="grid_atencion" value="6">N/A</label>
+          </div>
+        </div>
+
+        <div class="matrix-item">
+          <div class="matrix-label">Comunicación durante el desarrollo del estudio</div>
+          <div class="matrix-scale">
+            <label><input type="radio" name="grid_comunicacionDesarrollo" value="1" required>1</label>
+            <label><input type="radio" name="grid_comunicacionDesarrollo" value="2">2</label>
+            <label><input type="radio" name="grid_comunicacionDesarrollo" value="3">3</label>
+            <label><input type="radio" name="grid_comunicacionDesarrollo" value="4">4</label>
+            <label><input type="radio" name="grid_comunicacionDesarrollo" value="5">5</label>
+            <label><input type="radio" name="grid_comunicacionDesarrollo" value="6">N/A</label>
+          </div>
+        </div>
+
+        <div class="matrix-item">
+          <div class="matrix-label">Cumplimiento de los tiempos acordados</div>
+          <div class="matrix-scale">
+            <label><input type="radio" name="grid_cumplimientoTiempos" value="1" required>1</label>
+            <label><input type="radio" name="grid_cumplimientoTiempos" value="2">2</label>
+            <label><input type="radio" name="grid_cumplimientoTiempos" value="3">3</label>
+            <label><input type="radio" name="grid_cumplimientoTiempos" value="4">4</label>
+            <label><input type="radio" name="grid_cumplimientoTiempos" value="5">5</label>
+            <label><input type="radio" name="grid_cumplimientoTiempos" value="6">N/A</label>
+          </div>
+        </div>
+
+        <div class="matrix-item">
+          <div class="matrix-label">Calidad de la información obtenida</div>
+          <div class="matrix-scale">
+            <label><input type="radio" name="grid_calidadInformacion" value="1" required>1</label>
+            <label><input type="radio" name="grid_calidadInformacion" value="2">2</label>
+            <label><input type="radio" name="grid_calidadInformacion" value="3">3</label>
+            <label><input type="radio" name="grid_calidadInformacion" value="4">4</label>
+            <label><input type="radio" name="grid_calidadInformacion" value="5">5</label>
+            <label><input type="radio" name="grid_calidadInformacion" value="6">N/A</label>
+          </div>
+        </div>
+
+        <div class="matrix-item">
+          <div class="matrix-label">Claridad de los resultados presentados</div>
+          <div class="matrix-scale">
+            <label><input type="radio" name="grid_claridadResultados" value="1" required>1</label>
+            <label><input type="radio" name="grid_claridadResultados" value="2">2</label>
+            <label><input type="radio" name="grid_claridadResultados" value="3">3</label>
+            <label><input type="radio" name="grid_claridadResultados" value="4">4</label>
+            <label><input type="radio" name="grid_claridadResultados" value="5">5</label>
+            <label><input type="radio" name="grid_claridadResultados" value="6">N/A</label>
+          </div>
+        </div>
+
+        <div class="matrix-item">
+          <div class="matrix-label">Utilidad de los hallazgos y recomendaciones</div>
+          <div class="matrix-scale">
+            <label><input type="radio" name="grid_utilidadHallazgos" value="1" required>1</label>
+            <label><input type="radio" name="grid_utilidadHallazgos" value="2">2</label>
+            <label><input type="radio" name="grid_utilidadHallazgos" value="3">3</label>
+            <label><input type="radio" name="grid_utilidadHallazgos" value="4">4</label>
+            <label><input type="radio" name="grid_utilidadHallazgos" value="5">5</label>
+            <label><input type="radio" name="grid_utilidadHallazgos" value="6">N/A</label>
+          </div>
+        </div>
+
+        <div class="matrix-item">
+          <div class="matrix-label">Presentación de los entregables</div>
+          <div class="matrix-scale">
+            <label><input type="radio" name="grid_presentacionEntregables" value="1" required>1</label>
+            <label><input type="radio" name="grid_presentacionEntregables" value="2">2</label>
+            <label><input type="radio" name="grid_presentacionEntregables" value="3">3</label>
+            <label><input type="radio" name="grid_presentacionEntregables" value="4">4</label>
+            <label><input type="radio" name="grid_presentacionEntregables" value="5">5</label>
+            <label><input type="radio" name="grid_presentacionEntregables" value="6">N/A</label>
+          </div>
+        </div>
+
+        <div class="matrix-item">
+          <div class="matrix-label">Seguimiento posterior a la entrega</div>
+          <div class="matrix-scale">
+            <label><input type="radio" name="grid_seguimientoPosterior" value="1" required>1</label>
+            <label><input type="radio" name="grid_seguimientoPosterior" value="2">2</label>
+            <label><input type="radio" name="grid_seguimientoPosterior" value="3">3</label>
+            <label><input type="radio" name="grid_seguimientoPosterior" value="4">4</label>
+            <label><input type="radio" name="grid_seguimientoPosterior" value="5">5</label>
+            <label><input type="radio" name="grid_seguimientoPosterior" value="6">N/A</label>
+          </div>
+        </div>
       </div>
 
       <div class="field">
-        <label>Cumplimiento de los tiempos de entrega</label>
-        <div class="scale">
-          <label><input type="radio" name="cumplimientoTiempos" value="1">1</label>
-          <label><input type="radio" name="cumplimientoTiempos" value="2">2</label>
-          <label><input type="radio" name="cumplimientoTiempos" value="3">3</label>
-          <label><input type="radio" name="cumplimientoTiempos" value="4">4</label>
-          <label><input type="radio" name="cumplimientoTiempos" value="5">5</label>
+        <label class="q">3. ¿Considera que el estudio cumplió con los objetivos y alcances acordados?</label>
+        <div class="choice-list">
+          <label><input type="radio" name="cumplimientoObjetivos" value="Sí, completamente" required>Sí, completamente</label>
+          <label><input type="radio" name="cumplimientoObjetivos" value="Sí, en su mayoría">Sí, en su mayoría</label>
+          <label><input type="radio" name="cumplimientoObjetivos" value="Parcialmente">Parcialmente</label>
+          <label><input type="radio" name="cumplimientoObjetivos" value="No">No</label>
+          <label><input type="radio" name="cumplimientoObjetivos" value="No estoy seguro">No estoy seguro</label>
         </div>
-        <div class="scale-labels"><span>Muy insatisfecho</span><span>Muy satisfecho</span></div>
       </div>
 
       <div class="field">
-        <label>Comunicación y disponibilidad del equipo durante el proyecto</label>
+        <label class="q">4. ¿Qué tan útiles fueron los resultados para la toma de decisiones de su empresa?</label>
         <div class="scale">
-          <label><input type="radio" name="comunicacion" value="1">1</label>
-          <label><input type="radio" name="comunicacion" value="2">2</label>
-          <label><input type="radio" name="comunicacion" value="3">3</label>
-          <label><input type="radio" name="comunicacion" value="4">4</label>
-          <label><input type="radio" name="comunicacion" value="5">5</label>
+          <label><input type="radio" name="utilidadResultados" value="1" required>1</label>
+          <label><input type="radio" name="utilidadResultados" value="2">2</label>
+          <label><input type="radio" name="utilidadResultados" value="3">3</label>
+          <label><input type="radio" name="utilidadResultados" value="4">4</label>
+          <label><input type="radio" name="utilidadResultados" value="5">5</label>
         </div>
-        <div class="scale-labels"><span>Muy insatisfecho</span><span>Muy satisfecho</span></div>
-      </div>
-
-      <div class="field">
-        <label>Calidad del reporte / entregable final</label>
-        <div class="scale">
-          <label><input type="radio" name="calidadReporte" value="1">1</label>
-          <label><input type="radio" name="calidadReporte" value="2">2</label>
-          <label><input type="radio" name="calidadReporte" value="3">3</label>
-          <label><input type="radio" name="calidadReporte" value="4">4</label>
-          <label><input type="radio" name="calidadReporte" value="5">5</label>
-        </div>
-        <div class="scale-labels"><span>Muy insatisfecho</span><span>Muy satisfecho</span></div>
+        <div class="scale-labels"><span>Nada útiles</span><span>Extremadamente útiles</span></div>
       </div>
     </div>
 
     <div class="card">
-      <h2>Costos</h2>
+      <h2>Costos y relación costo-beneficio</h2>
 
       <div class="field">
-        <label>Relación costo-beneficio del servicio</label>
+        <label class="q">5. En comparación con el servicio recibido, ¿cómo considera los costos de Scoperta?</label>
+        <div class="choice-list">
+          <label><input type="radio" name="costosPercepcion" value="Muy accesibles" required>Muy accesibles</label>
+          <label><input type="radio" name="costosPercepcion" value="Adecuados">Adecuados</label>
+          <label><input type="radio" name="costosPercepcion" value="Ligeramente elevados">Ligeramente elevados</label>
+          <label><input type="radio" name="costosPercepcion" value="Muy elevados">Muy elevados</label>
+          <label><input type="radio" name="costosPercepcion" value="No tengo información suficiente para evaluarlos">No tengo información suficiente para evaluarlos</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="q">6. ¿Cómo calificaría la relación entre el costo pagado y el valor obtenido?</label>
         <div class="scale">
-          <label><input type="radio" name="costoBeneficio" value="1">1</label>
+          <label><input type="radio" name="costoBeneficio" value="1" required>1</label>
           <label><input type="radio" name="costoBeneficio" value="2">2</label>
           <label><input type="radio" name="costoBeneficio" value="3">3</label>
           <label><input type="radio" name="costoBeneficio" value="4">4</label>
           <label><input type="radio" name="costoBeneficio" value="5">5</label>
         </div>
-        <div class="scale-labels"><span>Muy en desacuerdo</span><span>Muy de acuerdo</span></div>
+        <div class="scale-labels"><span>Muy mala</span><span>Excelente</span></div>
       </div>
 
       <div class="field">
-        <label>Claridad en la cotización / propuesta de costos</label>
-        <div class="scale">
-          <label><input type="radio" name="claridadCotizacion" value="1">1</label>
-          <label><input type="radio" name="claridadCotizacion" value="2">2</label>
-          <label><input type="radio" name="claridadCotizacion" value="3">3</label>
-          <label><input type="radio" name="claridadCotizacion" value="4">4</label>
-          <label><input type="radio" name="claridadCotizacion" value="5">5</label>
+        <label class="q">7. ¿La propuesta económica fue clara y detalló adecuadamente los servicios incluidos?</label>
+        <div class="choice-list">
+          <label><input type="radio" name="claridadPropuestaEconomica" value="Sí, completamente" required>Sí, completamente</label>
+          <label><input type="radio" name="claridadPropuestaEconomica" value="Sí, aunque podría ser más detallada">Sí, aunque podría ser más detallada</label>
+          <label><input type="radio" name="claridadPropuestaEconomica" value="Parcialmente">Parcialmente</label>
+          <label><input type="radio" name="claridadPropuestaEconomica" value="No">No</label>
+          <label><input type="radio" name="claridadPropuestaEconomica" value="No participé en la revisión de la propuesta económica">No participé en la revisión de la propuesta económica</label>
         </div>
-        <div class="scale-labels"><span>Muy en desacuerdo</span><span>Muy de acuerdo</span></div>
-      </div>
-
-      <div class="field">
-        <label>Los costos finales se ajustaron a lo cotizado, sin sorpresas</label>
-        <div class="scale">
-          <label><input type="radio" name="costosSinSorpresas" value="1">1</label>
-          <label><input type="radio" name="costosSinSorpresas" value="2">2</label>
-          <label><input type="radio" name="costosSinSorpresas" value="3">3</label>
-          <label><input type="radio" name="costosSinSorpresas" value="4">4</label>
-          <label><input type="radio" name="costosSinSorpresas" value="5">5</label>
-        </div>
-        <div class="scale-labels"><span>Muy en desacuerdo</span><span>Muy de acuerdo</span></div>
       </div>
     </div>
 
     <div class="card">
-      <h2>Recomendación</h2>
+      <h2>Atención y comunicación</h2>
+
       <div class="field">
-        <label>¿Qué tan probable es que nos recomiendes con otra empresa? (0 = nada probable, 10 = totalmente probable)</label>
-        <div class="nps-scale">
-          <label><input type="radio" name="nps" value="0">0</label>
+        <label class="q">8. ¿Cómo calificaría la disponibilidad del equipo de Scoperta para atender sus dudas o solicitudes?</label>
+        <div class="scale">
+          <label><input type="radio" name="disponibilidadEquipo" value="1" required>1</label>
+          <label><input type="radio" name="disponibilidadEquipo" value="2">2</label>
+          <label><input type="radio" name="disponibilidadEquipo" value="3">3</label>
+          <label><input type="radio" name="disponibilidadEquipo" value="4">4</label>
+          <label><input type="radio" name="disponibilidadEquipo" value="5">5</label>
+        </div>
+        <div class="scale-labels"><span>Muy deficiente</span><span>Excelente</span></div>
+      </div>
+
+      <div class="field">
+        <label class="q">9. ¿La comunicación durante el proyecto fue clara, oportuna y suficiente?</label>
+        <div class="choice-list">
+          <label><input type="radio" name="comunicacionClara" value="Sí, completamente" required>Sí, completamente</label>
+          <label><input type="radio" name="comunicacionClara" value="Sí, en su mayoría">Sí, en su mayoría</label>
+          <label><input type="radio" name="comunicacionClara" value="Parcialmente">Parcialmente</label>
+          <label><input type="radio" name="comunicacionClara" value="No">No</label>
+          <label><input type="radio" name="comunicacionClara" value="No aplica">No aplica</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="q">10. ¿En qué aspecto considera que podríamos mejorar nuestra atención o comunicación? <span class="optional-tag">(opcional)</span></label>
+        <textarea name="mejoraAtencion"></textarea>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Recomendación y continuidad</h2>
+
+      <div class="field">
+        <label class="q">11. En una escala del 0 al 10, ¿qué tan probable es que recomiende los servicios de Scoperta a un colega o a otra empresa?</label>
+        <div class="scale">
+          <label><input type="radio" name="nps" value="0" required>0</label>
           <label><input type="radio" name="nps" value="1">1</label>
           <label><input type="radio" name="nps" value="2">2</label>
           <label><input type="radio" name="nps" value="3">3</label>
@@ -284,22 +475,58 @@
           <label><input type="radio" name="nps" value="9">9</label>
           <label><input type="radio" name="nps" value="10">10</label>
         </div>
+        <div class="scale-labels"><span>Nada probable</span><span>Totalmente probable</span></div>
+      </div>
+
+      <div class="field">
+        <label class="q">12. ¿Volvería a contratar a Scoperta para futuros estudios de mercado?</label>
+        <div class="choice-list">
+          <label><input type="radio" name="volveriaContratar" value="Definitivamente sí" required>Definitivamente sí</label>
+          <label><input type="radio" name="volveriaContratar" value="Probablemente sí">Probablemente sí</label>
+          <label><input type="radio" name="volveriaContratar" value="No estoy seguro">No estoy seguro</label>
+          <label><input type="radio" name="volveriaContratar" value="Probablemente no">Probablemente no</label>
+          <label><input type="radio" name="volveriaContratar" value="Definitivamente no">Definitivamente no</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="q">13. ¿Qué otros servicios de investigación de mercados serían de interés para su empresa?</label>
+        <div class="choice-list">
+          <label><input type="checkbox" name="serviciosInteres" value="Mystery Shopper">Mystery Shopper</label>
+          <label><input type="checkbox" name="serviciosInteres" value="Estudios de satisfacción y experiencia del cliente">Estudios de satisfacción y experiencia del cliente</label>
+          <label><input type="checkbox" name="serviciosInteres" value="Salud de marca">Salud de marca</label>
+          <label><input type="checkbox" name="serviciosInteres" value="Benchmarking de competidores">Benchmarking de competidores</label>
+          <label><input type="checkbox" name="serviciosInteres" value="Encuestas a clientes o consumidores">Encuestas a clientes o consumidores</label>
+          <label><input type="checkbox" name="serviciosInteres" value="Estudios de precios">Estudios de precios</label>
+          <label><input type="checkbox" name="serviciosInteres" value="Evaluación de concepto o producto">Evaluación de concepto o producto</label>
+          <label><input type="checkbox" name="serviciosInteres" value="Focus Group">Focus Group</label>
+          <label><input type="checkbox" name="serviciosInteres" value="Entrevistas a profundidad">Entrevistas a profundidad</label>
+          <label><input type="checkbox" name="serviciosInteres" value="Análisis de información y tableros de resultados">Análisis de información y tableros de resultados</label>
+          <label>
+            <input type="checkbox" id="otroCheck" name="serviciosInteres" value="Otro">Otro
+          </label>
+          <input type="text" class="otro-input" id="otroTexto" name="serviciosInteresOtro" placeholder="Especifique..." style="display:none;">
+          <label><input type="checkbox" name="serviciosInteres" value="Por el momento, ninguno">Por el momento, ninguno</label>
+        </div>
       </div>
     </div>
 
     <div class="card">
-      <h2>Comentarios</h2>
+      <h2>Comentarios finales</h2>
+
       <div class="field">
-        <label for="queValoro">¿Qué fue lo que más valoraste del servicio?</label>
-        <textarea id="queValoro" name="queValoro"></textarea>
+        <label class="q">14. ¿Qué fue lo que más valoró del servicio brindado por Scoperta?</label>
+        <textarea name="queValoro" required></textarea>
       </div>
+
       <div class="field">
-        <label for="queMejorar">¿Qué podríamos mejorar?</label>
-        <textarea id="queMejorar" name="queMejorar"></textarea>
+        <label class="q">15. ¿Qué aspecto considera que deberíamos mejorar?</label>
+        <textarea name="queMejorar" required></textarea>
       </div>
+
       <div class="field">
-        <label for="correo">Correo (opcional, por si quieres que te contactemos)</label>
-        <input type="email" id="correo" name="correo">
+        <label class="q">16. ¿Desea compartirnos algún comentario, sugerencia o experiencia adicional? <span class="optional-tag">(opcional)</span></label>
+        <textarea name="comentarioAdicional"></textarea>
       </div>
     </div>
 
@@ -307,8 +534,8 @@
   </form>
 
   <div id="successMsg">
-    <h2>¡Gracias por tu respuesta!</h2>
-    <p>Tu retroalimentación es muy valiosa para nosotros.</p>
+    <h2>Muchas gracias por compartirnos su opinión.</h2>
+    <p>Sus respuestas nos ayudarán a mejorar nuestros procesos, fortalecer la calidad de nuestros estudios y continuar desarrollando soluciones de investigación de mercados que generen valor para su empresa.</p>
   </div>
   <div id="errorMsg">
     <p>Hubo un problema al enviar tu respuesta. Por favor intenta de nuevo.</p>
@@ -321,6 +548,13 @@
 
   const form = document.getElementById('surveyForm');
   const submitBtn = document.getElementById('submitBtn');
+  const otroCheck = document.getElementById('otroCheck');
+  const otroTexto = document.getElementById('otroTexto');
+
+  otroCheck.addEventListener('change', function () {
+    otroTexto.style.display = this.checked ? 'block' : 'none';
+    if (!this.checked) otroTexto.value = '';
+  });
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -329,7 +563,16 @@
 
     const formData = new FormData(form);
     const data = {};
-    formData.forEach((value, key) => { data[key] = value; });
+    const serviciosInteres = [];
+
+    formData.forEach((value, key) => {
+      if (key === 'serviciosInteres') {
+        serviciosInteres.push(value);
+      } else {
+        data[key] = value;
+      }
+    });
+    data.serviciosInteres = serviciosInteres.join(', ');
 
     fetch(API_URL, {
       method: 'POST',
